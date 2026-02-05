@@ -1,0 +1,16 @@
+# robots.txt for profectus-note.com
+
+User-agent: *
+Allow: /
+
+# サイトマップの場所を指定
+Sitemap: https://profectus-note.com/sitemap-index.xml
+
+# 下書きページは除外
+Disallow: /draft/
+
+# 検索結果ページは除外（もしあれば）
+Disallow: /search?
+
+# 管理ページは除外（もしあれば）
+Disallow: /admin/
