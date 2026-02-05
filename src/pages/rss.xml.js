@@ -22,7 +22,7 @@ export async function GET(context) {
       pubDate: post.data.pubDate,
       description: post.data.description,
       link: `/blog/${post.slug}/`,
-      categories: [post.data.category, ...post.data.tags],
+      categories: post.data.tags ?? [],  
       author: 'プロフェクタスデザイン',
       customData: `<language>ja</language>`,
     })),
