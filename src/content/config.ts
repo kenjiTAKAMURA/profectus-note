@@ -3,7 +3,7 @@ import { defineCollection, z } from 'astro:content';
 
 const blog = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     // 基本情報
     title: z.string(),
     description: z.string(),
@@ -17,8 +17,8 @@ const blog = defineCollection({
     // 攻め/守り分類
     attackOrDefense: z.enum(['attack', 'defense', 'both']).default('both'),
     
-    // OGP画像
-    heroImage: z.string().optional(),
+    // OGP画像（文字列パス（publicフォルダ）または画像オブジェクト（src/assets）の両方を受け付ける）
+    heroImage: z.union([z.string(), image()]).optional(),
     ogImage: z.string().optional(),
     
     // 記事タイプ
