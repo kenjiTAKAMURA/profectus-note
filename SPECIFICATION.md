@@ -208,7 +208,7 @@ HTMLの`<head>`セクションを生成するコンポーネントです。SEO�
 - ファビコン
 - サイトマップリンク
 - RSSフィードリンク
-- OGP（Open Graph Protocol）タグ
+- OGP（Open Graph Protocol）タグ（デフォルト画像: `/assets/ProfectusNote.png`）
 - Twitter Cardタグ
 - 構造化データ（JSON-LD、Schema.org）
 - Google Analytics

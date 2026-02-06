@@ -633,7 +633,7 @@ export const collections = { blog };
 
 このコンポーネントは以下の機能を含んでいます：
 - 基本メタタグ（charset, viewport, description, author）
-- OGP（Open Graph Protocol）タグ
+- OGP（Open Graph Protocol）タグ（デフォルト画像: `/assets/ProfectusNote.png`）
 - Twitter Cardタグ
 - 構造化データ（JSON-LD、Schema.org）
 - Google Analytics
