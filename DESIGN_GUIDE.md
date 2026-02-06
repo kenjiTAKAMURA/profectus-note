@@ -275,6 +275,23 @@ actionItems:  # オプション（Frontmatterで指定すると自動表示）
 - **スタイリング**: CSS（カスタムプロパティ）
 - **コンテンツ管理**: Astro Content Collections（Markdown/MDX）
 
+### パフォーマンス最適化
+
+**実装済みの最適化:**
+- CSSの完全インライン化（レンダリングブロック回避）
+- Google Fontsの非同期読み込み
+- フォント読み込みの最適化（Font Loading API）
+- リフローの最小化（requestAnimationFrame）
+- 共通スタイルの統合（global.cssに集約）
+- レスポンシブ対応（モバイル・タブレット）
+
+### ダークモード/ライトモード
+
+- ヘッダーにテーマ切り替えボタンを配置
+- localStorageに保存（次回訪問時に適用）
+- システム設定（prefers-color-scheme）に対応
+- リフローを最小化した実装
+
 ### デプロイ
 
 - **ホスティング**: Cloudflare Pages

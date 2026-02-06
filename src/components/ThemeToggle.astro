@@ -45,31 +45,23 @@
 			html.setAttribute('data-theme', initialTheme);
 		}
 		
-		// DOMContentLoaded後にボタンのイベントリスナーを設定
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', initThemeToggle);
-		} else {
-			initThemeToggle();
-		}
-		
-		function initThemeToggle() {
-			// ボタンクリック時の処理
-			if (themeToggle) {
-				themeToggle.addEventListener('click', function() {
-					const currentTheme = html.getAttribute('data-theme');
-					const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-					setTheme(newTheme);
-				});
-			}
-			
-			// システム設定の変更を監視
-			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-				// ユーザーが手動でテーマを設定していない場合のみシステム設定に従う
-				if (!localStorage.getItem('theme')) {
-					setTheme(e.matches ? 'dark' : 'light');
-				}
+		// ボタンクリック時の処理（DOMContentLoadedを待たずに設定）
+		if (themeToggle) {
+			themeToggle.addEventListener('click', function() {
+				const currentTheme = html.getAttribute('data-theme');
+				const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+				setTheme(newTheme);
 			});
 		}
+		
+		// システム設定の変更を監視（一度だけ設定）
+		var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+		mediaQuery.addEventListener('change', function(e) {
+			// ユーザーが手動でテーマを設定していない場合のみシステム設定に従う
+			if (!localStorage.getItem('theme')) {
+				setTheme(e.matches ? 'dark' : 'light');
+			}
+		});
 	})();
 </script>
 

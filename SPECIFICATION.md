@@ -49,7 +49,8 @@ profectus-note/
 │   │   ├── Header.astro     # ヘッダーコンポーネント
 │   │   ├── Footer.astro      # フッターコンポーネント
 │   │   ├── FormattedDate.astro  # 日付フォーマット
-│   │   └── HeaderLink.astro     # ナビゲーションリンク
+│   │   ├── HeaderLink.astro     # ナビゲーションリンク
+│   │   └── ThemeToggle.astro    # ダークモード/ライトモード切り替えボタン
 │   ├── content/        # ブログ記事（Markdown/MDXファイル）
 │   ├── layouts/        # ページレイアウト
 │   │   └── BlogPost.astro    # ブログ記事専用レイアウト
@@ -89,6 +90,8 @@ Astroの設定ファイルです。サイトURL、プラグイン、Markdown設�
 **主な設定:**
 - `site`: 本番環境のURL
 - `integrations`: MDX、サイトマップなどの統合機能
+- `build.inlineStylesheets`: `'always'` - すべてのCSSをインライン化してレンダリングブロックを回避
+- `vite.build.cssCodeSplit`: `false` - CSSを1つのファイルにまとめてリクエスト数を削減
 - `markdown`: シンタックスハイライト設定
 
 #### `tsconfig.json`
@@ -178,7 +181,17 @@ RSSフィードのエンドポイントです。ブログ記事をRSS形式で�
 **機能:**
 - サイトタイトル（ホームへのリンク）
 - ナビゲーションメニュー（Home, Blog, About）
-- SNSリンク（Mastodon, Twitter, GitHub）
+- テーマ切り替えボタン（ダークモード/ライトモード）
+- SNSリンク（X/Twitter）
+
+#### `ThemeToggle.astro`
+ダークモード/ライトモードを切り替えるボタンコンポーネントです。
+
+**機能:**
+- テーマの切り替え（ダーク/ライト）
+- localStorageに保存（次回訪問時に適用）
+- システム設定（prefers-color-scheme）に対応
+- リフローを最小化した実装
 
 #### `Footer.astro`
 サイトのフッターコンポーネントです。コピーライトとSNSリンクを表示します。
@@ -199,7 +212,19 @@ HTMLの`<head>`セクションを生成するコンポーネントです。SEO�
 - Twitter Cardタグ
 - 構造化データ（JSON-LD、Schema.org）
 - Google Analytics
-- Google Fonts（Noto Sans JP/Serif JP）
+- Google Fonts（Noto Sans JP/Serif JP）の非同期読み込み
+
+**パフォーマンス最適化機能:**
+- CSSの完全インライン化（レンダリングブロック回避）
+- Google Fontsの非同期読み込み（`media="print"` + `onload`）
+- フォント読み込み最適化（Font Loading API使用）
+- リフローの最小化（requestAnimationFrame使用）の非同期読み込み
+
+**パフォーマンス最適化機能:**
+- CSSの完全インライン化（レンダリングブロック回避）
+- Google Fontsの非同期読み込み（`media="print"` + `onload`）
+- フォント読み込み最適化（Font Loading API使用）
+- リフローの最小化（requestAnimationFrame使用）
 
 **プロップス:**
 - `title`: ページタイトル（オプション、デフォルトはSITE_TITLE）
@@ -256,6 +281,9 @@ HTMLの`<head>`セクションを生成するコンポーネントです。SEO�
 - CSS変数（カラーパレット、フォント、スペーシング）
 - ベーススタイル（body, h1-h6, a）
 - カスタムクラス（バッジ、アクションボックス）
+- 共通レイアウトスタイル（mainコンテナ、post-list、post-title等）
+- レスポンシブ対応（タブレット、モバイル）
+- ダークモード対応
 
 ---
 
@@ -318,6 +346,25 @@ draft: false
 - **フォント**:
   - 見出し: Noto Sans JP（太字）
   - 本文: Noto Serif JP（読みやすさ重視）
+
+### ダークモード/ライトモード
+
+`src/components/ThemeToggle.astro`コンポーネントでダークモードとライトモードを切り替えできます。
+
+**機能:**
+- ユーザーの選択をlocalStorageに保存
+- システム設定（prefers-color-scheme）に対応
+- リフローを最小化した実装
+- ページ読み込み前にテーマを適用（FOUC防止）
+
+### パフォーマンス最適化
+
+**実装済みの最適化:**
+- CSSの完全インライン化（`inlineStylesheets: 'always'`）
+- Google Fontsの非同期読み込み（レンダリングブロック回避）
+- フォント読み込みの最適化（Font Loading API使用）
+- リフローの最小化（requestAnimationFrame使用）
+- 共通スタイルの統合（global.cssに集約）
 
 ### ナビゲーションメニューの変更
 

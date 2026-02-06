@@ -14,12 +14,6 @@ import { SITE_DESCRIPTION, SITE_TITLE, SOCIAL_LINKS } from '../consts';
 	<head>
 		<BaseHead title={`About | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				max-width: 960px;
-				margin: 0 auto;
-				padding: 2em 1em;
-			}
-			
 			h1 {
 				font-size: 2rem;
 				margin-bottom: 2rem;
@@ -92,12 +86,7 @@ import { SITE_DESCRIPTION, SITE_TITLE, SOCIAL_LINKS } from '../consts';
 				color: var(--color-text);
 			}
 			
-			/* レスポンシブ対応 */
 			@media (max-width: 768px) {
-				main {
-					padding: 1em;
-				}
-				
 				h1 {
 					font-size: 1.75rem;
 				}

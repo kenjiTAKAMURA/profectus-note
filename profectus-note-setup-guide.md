@@ -403,8 +403,16 @@ export default defineConfig({
   
   // ビルド設定
   build: {
-    // CSS/JSのインライン化しきい値
-    inlineStylesheets: 'auto',
+    // CSSを完全にインライン化してレンダリングブロックを回避
+    inlineStylesheets: 'always',
+  },
+  
+  // Vite設定（パフォーマンス最適化）
+  vite: {
+    build: {
+      // CSSを1つのファイルにまとめてリクエスト数を削減
+      cssCodeSplit: false,
+    },
   },
   
   // Markdown設定
@@ -629,9 +637,17 @@ export const collections = { blog };
 - Twitter Cardタグ
 - 構造化データ（JSON-LD、Schema.org）
 - Google Analytics
-- Google Fonts（Noto Sans JP/Serif JP）
+- Google Fonts（Noto Sans JP/Serif JP）の非同期読み込み
+- フォント読み込み最適化（Font Loading API使用）
+- クリティカルCSSのインライン化
 - RSSフィードリンク
 - ファビコン
+
+**パフォーマンス最適化:**
+- CSSの完全インライン化（レンダリングブロック回避）
+- Google Fontsの非同期読み込み（`media="print"` + `onload`）
+- フォント読み込み完了検知（Font Loading API）
+- リフローの最小化（requestAnimationFrame使用）
 
 **プロップス:**
 - `title`: ページタイトル（オプション、デフォルトはSITE_TITLE）

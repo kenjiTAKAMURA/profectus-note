@@ -88,12 +88,26 @@ const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 		font-family: var(--font-heading);
 	}
 </style>
-{/* フォント読み込み完了を検知するスクリプト（リフローを最小化） */}
+{/* フォント読み込みとGoogle Fontsのonloadフォールバックを統合 */}
 <script is:inline>
-	// フォント読み込み完了を検知（リフローを最小化）
+	// @ts-nocheck
 	(function() {
+		// Google Fontsのonloadフォールバック
+		var fontLink = document.querySelector('link[media="print"]');
+		if (fontLink) {
+			fontLink.onload = function() {
+				this.media = 'all';
+			};
+			// フォールバック: 一定時間後に強制的に適用
+			setTimeout(function() {
+				if (fontLink.media === 'print') {
+					fontLink.media = 'all';
+				}
+			}, 100);
+		}
+		
+		// フォント読み込み完了を検知（リフローを最小化）
 		if ('fonts' in document) {
-			// フォント読み込みを非ブロッキングで実行
 			Promise.all([
 				document.fonts.load('400 1em "Noto Sans JP"'),
 				document.fonts.load('600 1em "Noto Sans JP"'),
@@ -102,18 +116,15 @@ const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 				document.fonts.load('600 1em "Noto Serif JP"'),
 				document.fonts.load('700 1em "Noto Serif JP"'),
 			]).then(function() {
-				// requestAnimationFrameを使用してリフローを最適化
 				requestAnimationFrame(function() {
 					document.documentElement.classList.add('fonts-loaded');
 				});
 			}).catch(function() {
-				// フォント読み込み失敗時もクラスを追加（フォールバックフォントを使用）
 				requestAnimationFrame(function() {
 					document.documentElement.classList.add('fonts-loaded');
 				});
 			});
 		} else {
-			// Font Loading APIがサポートされていない場合は即座にクラスを追加
 			document.documentElement.classList.add('fonts-loaded');
 		}
 	})();
@@ -140,23 +151,6 @@ const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 		rel="stylesheet"
 	/>
 </noscript>
-{/* onloadがサポートされていないブラウザ用のフォールバック */}
-<script is:inline>
-	(function() {
-		var link = document.querySelector('link[media="print"]');
-		if (link) {
-			link.onload = function() {
-				this.media = 'all';
-			};
-			// フォールバック: 一定時間後に強制的に適用
-			setTimeout(function() {
-				if (link.media === 'print') {
-					link.media = 'all';
-				}
-			}, 100);
-		}
-	})();
-</script>
 
 <!-- ============================================
      Canonical URL（正規URL）

@@ -40,13 +40,6 @@ const badgeType = attackOrDefense || categoryInfo?.type || 'both';
 			tags={tags || []}
 		/>
 		<style>
-			/* メインコンテナのスタイル */
-			main {
-				max-width: 960px;
-				margin: 0 auto;
-				padding: 2em 1em;
-			}
-			
 			article {
 				width: 100%;
 			}
@@ -90,39 +83,6 @@ const badgeType = attackOrDefense || categoryInfo?.type || 'both';
 				gap: 0.5rem;
 				flex-wrap: wrap;
 				margin-bottom: 1rem;
-			}
-			
-			.category-badge {
-				background-color: var(--color-primary);
-				color: white;
-				padding: 0.25rem 0.75rem;
-				border-radius: 0.25rem;
-				font-size: 0.875rem;
-				font-weight: 600;
-			}
-			
-			.badge-attack,
-			.badge-defense,
-			.badge-both {
-				padding: 0.25rem 0.75rem;
-				border-radius: 0.25rem;
-				font-size: 0.875rem;
-				font-weight: 600;
-			}
-			
-			.badge-attack {
-				background-color: var(--color-attack);
-				color: white;
-			}
-			
-			.badge-defense {
-				background-color: var(--color-defense);
-				color: white;
-			}
-			
-			.badge-both {
-				background: linear-gradient(135deg, var(--color-attack) 50%, var(--color-defense) 50%);
-				color: white;
 			}
 			
 			/* タイトルのスタイル */
