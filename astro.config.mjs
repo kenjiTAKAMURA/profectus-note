@@ -32,6 +32,13 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   
+  // Vite設定（パフォーマンス最適化）
+  vite: {
+    build: {
+      cssCodeSplit: false, // CSSを1つのファイルにまとめてリクエスト数を削減
+    },
+  },
+  
   // Markdown設定
   markdown: {
     // シンタックスハイライト設定（コードブロックの色付け）
