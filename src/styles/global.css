@@ -13,7 +13,7 @@
   --color-secondary: #38a169;    /* アクセントグリーン - 成長・進歩を表現 */
   --color-background: #f7fafc;   /* クリーンホワイト - 背景色 */
   --color-text: #2d3748;         /* テキスト色 - 読みやすいダークグレー */
-  --color-text-light: #718096;   /* 薄いテキスト色 - 補助的な情報用 */
+  --color-text-light: #4a5568;   /* 薄いテキスト色 - 補助的な情報用（WCAG AA準拠: 4.5:1以上） */
   --color-border: #e2e8f0;       /* ボーダー色 - 区切り線などに使用 */
   --color-attack: #3182ce;       /* 攻め（IT・DX）のアクセント色 - ビジネス成長を表現 */
   --color-defense: #e53e3e;      /* 守り（セキュリティ）のアクセント色 - リスク対策を表現 */
@@ -25,7 +25,7 @@
   --color-secondary: #68d391;    /* ライトグリーン - ダークモード用 */
   --color-background: #1a202c;  /* ダークグレー - 背景色 */
   --color-text: #e2e8f0;         /* ライトグレー - テキスト色 */
-  --color-text-light: #a0aec0;   /* ミディアムグレー - 薄いテキスト色 */
+  --color-text-light: #cbd5e0;   /* ミディアムグレー - 薄いテキスト色（WCAG AA準拠: 4.5:1以上） */
   --color-border: #2d3748;       /* ダークボーダー色 */
   --color-attack: #63b3ed;       /* ライトブルー - 攻めのアクセント色 */
   --color-defense: #fc8181;      /* ライトレッド - 守りのアクセント色 */
