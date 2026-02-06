@@ -14,7 +14,7 @@
 
 <script is:inline>
 	// @ts-nocheck
-	// テーマ切り替えのロジック
+	// テーマ切り替えのロジック（リフローを最小化）
 	(function() {
 		const themeToggle = document.getElementById('theme-toggle');
 		const html = document.documentElement;
@@ -29,35 +29,47 @@
 			return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 		}
 		
-		// テーマを適用
+		// テーマを適用（リフローを最小化）
 		function setTheme(theme) {
 			if (theme !== 'dark' && theme !== 'light') return;
-			html.setAttribute('data-theme', theme);
-			localStorage.setItem('theme', theme);
-		}
-		
-		// 初期テーマを設定
-		const initialTheme = getInitialTheme();
-		if (initialTheme === 'dark' || initialTheme === 'light') {
-			setTheme(initialTheme);
-		}
-		
-		// ボタンクリック時の処理
-		if (themeToggle) {
-			themeToggle.addEventListener('click', () => {
-				const currentTheme = html.getAttribute('data-theme');
-				const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-				setTheme(newTheme);
+			// requestAnimationFrameを使用してリフローを最適化
+			requestAnimationFrame(function() {
+				html.setAttribute('data-theme', theme);
+				localStorage.setItem('theme', theme);
 			});
 		}
 		
-		// システム設定の変更を監視
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-			// ユーザーが手動でテーマを設定していない場合のみシステム設定に従う
-			if (!localStorage.getItem('theme')) {
-				setTheme(e.matches ? 'dark' : 'light');
+		// 初期テーマを設定（ページ読み込み前に実行してFOUCを防ぐ）
+		const initialTheme = getInitialTheme();
+		if (initialTheme === 'dark' || initialTheme === 'light') {
+			html.setAttribute('data-theme', initialTheme);
+		}
+		
+		// DOMContentLoaded後にボタンのイベントリスナーを設定
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initThemeToggle);
+		} else {
+			initThemeToggle();
+		}
+		
+		function initThemeToggle() {
+			// ボタンクリック時の処理
+			if (themeToggle) {
+				themeToggle.addEventListener('click', function() {
+					const currentTheme = html.getAttribute('data-theme');
+					const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+					setTheme(newTheme);
+				});
 			}
-		});
+			
+			// システム設定の変更を監視
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+				// ユーザーが手動でテーマを設定していない場合のみシステム設定に従う
+				if (!localStorage.getItem('theme')) {
+					setTheme(e.matches ? 'dark' : 'light');
+				}
+			});
+		}
 	})();
 </script>
 

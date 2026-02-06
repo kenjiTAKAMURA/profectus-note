@@ -28,8 +28,8 @@ export default defineConfig({
   // ビルド設定
   build: {
     // CSS/JSのインライン化しきい値
-    // 'auto'にすると、小さなファイルは自動的にインライン化されます（パフォーマンス向上）
-    inlineStylesheets: 'auto',
+    // 'always'にすると、すべてのCSSをインライン化してレンダリングブロックを回避
+    inlineStylesheets: 'always',
   },
   
   // Vite設定（パフォーマンス最適化）

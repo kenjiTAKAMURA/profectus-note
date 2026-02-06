@@ -88,39 +88,47 @@ const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 		font-family: var(--font-heading);
 	}
 </style>
-{/* フォント読み込み完了を検知するスクリプト */}
+{/* フォント読み込み完了を検知するスクリプト（リフローを最小化） */}
 <script is:inline>
-	// フォント読み込み完了を検知
-	if ('fonts' in document) {
-		Promise.all([
-			document.fonts.load('400 1em "Noto Sans JP"'),
-			document.fonts.load('600 1em "Noto Sans JP"'),
-			document.fonts.load('700 1em "Noto Sans JP"'),
-			document.fonts.load('400 1em "Noto Serif JP"'),
-			document.fonts.load('600 1em "Noto Serif JP"'),
-			document.fonts.load('700 1em "Noto Serif JP"'),
-		]).then(() => {
+	// フォント読み込み完了を検知（リフローを最小化）
+	(function() {
+		if ('fonts' in document) {
+			// フォント読み込みを非ブロッキングで実行
+			Promise.all([
+				document.fonts.load('400 1em "Noto Sans JP"'),
+				document.fonts.load('600 1em "Noto Sans JP"'),
+				document.fonts.load('700 1em "Noto Sans JP"'),
+				document.fonts.load('400 1em "Noto Serif JP"'),
+				document.fonts.load('600 1em "Noto Serif JP"'),
+				document.fonts.load('700 1em "Noto Serif JP"'),
+			]).then(function() {
+				// requestAnimationFrameを使用してリフローを最適化
+				requestAnimationFrame(function() {
+					document.documentElement.classList.add('fonts-loaded');
+				});
+			}).catch(function() {
+				// フォント読み込み失敗時もクラスを追加（フォールバックフォントを使用）
+				requestAnimationFrame(function() {
+					document.documentElement.classList.add('fonts-loaded');
+				});
+			});
+		} else {
+			// Font Loading APIがサポートされていない場合は即座にクラスを追加
 			document.documentElement.classList.add('fonts-loaded');
-		}).catch(() => {
-			// フォント読み込み失敗時もクラスを追加（フォールバックフォントを使用）
-			document.documentElement.classList.add('fonts-loaded');
-		});
-	} else {
-		// Font Loading APIがサポートされていない場合は即座にクラスを追加
-		document.documentElement.classList.add('fonts-loaded');
-	}
+		}
+	})();
 </script>
 
 <!-- ============================================
-     Google Fonts（非同期読み込みでレンダリングブロックを回避）
+     Google Fonts（最適化された非同期読み込み）
      ============================================ -->
 {/* フォントの読み込みを最適化（preconnectで接続を事前確立） */}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-{/* Noto Sans JP（ゴシック体）とNoto Serif JP（明朝体）を非同期で読み込む */}
+{/* 必要なフォントのみを読み込む（subset=japaneseで日本語フォントのみ） */}
 {/* media="print"でレンダリングブロックを回避し、onloadで通常のスタイルシートに切り替え */}
 <link
-	href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap"
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap&subset=japanese"
 	rel="stylesheet"
 	media="print"
 	onload="this.media='all'"
@@ -128,10 +136,27 @@ const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 {/* JavaScriptが無効な場合のフォールバック */}
 <noscript>
 	<link
-		href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap&subset=japanese"
 		rel="stylesheet"
 	/>
 </noscript>
+{/* onloadがサポートされていないブラウザ用のフォールバック */}
+<script is:inline>
+	(function() {
+		var link = document.querySelector('link[media="print"]');
+		if (link) {
+			link.onload = function() {
+				this.media = 'all';
+			};
+			// フォールバック: 一定時間後に強制的に適用
+			setTimeout(function() {
+				if (link.media === 'print') {
+					link.media = 'all';
+				}
+			}, 100);
+		}
+	})();
+</script>
 
 <!-- ============================================
      Canonical URL（正規URL）
