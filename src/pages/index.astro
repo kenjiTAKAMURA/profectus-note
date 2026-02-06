@@ -1,49 +1,224 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+// src/pages/index.astro
+// トップページ（ルートパス: /）
+// サイトの紹介とコンセプトを表示します
+
+// コンポーネントのインポート
+import BaseHead from '../components/BaseHead.astro'; // HTMLの<head>セクションを生成
+import Footer from '../components/Footer.astro'; // フッターコンポーネント
+import Header from '../components/Header.astro'; // ヘッダーコンポーネント
+import { getCollection } from 'astro:content'; // Content Collectionsから記事を取得
+
+// 定数のインポート
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+// 最新記事を3件取得（トップページに表示用）
+const latestPosts = (await getCollection('blog', ({ data }) => !data.draft))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 	<head>
+		{/* BaseHeadコンポーネントでSEOメタタグやOGPタグを設定 */}
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 2em 1em;
+			}
+			
+			.hero {
+				margin-bottom: 4rem;
+			}
+			
+			.hero h1 {
+				font-size: 2rem;
+				margin-bottom: 1rem;
+				font-weight: 600;
+			}
+			
+			.hero .tagline {
+				font-size: 1.125rem;
+				color: var(--color-text-light);
+				margin-bottom: 1rem;
+				font-weight: 400;
+			}
+			
+			.hero .subtitle {
+				font-size: 1rem;
+				color: var(--color-text-light);
+				line-height: 1.8;
+			}
+			
+			section {
+				margin-bottom: 3rem;
+			}
+			
+			section h2 {
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+				font-weight: 600;
+			}
+			
+			section ul {
+				list-style: none;
+				padding: 0;
+			}
+			
+			section ul li {
+				margin-bottom: 0.75rem;
+				line-height: 1.8;
+			}
+			
+			.latest-posts {
+				margin-top: 4rem;
+			}
+			
+			.post-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			
+			.post-list li {
+				border-bottom: 1px solid var(--color-border);
+				padding: 1.5rem 0;
+			}
+			
+			.post-list li:last-child {
+				border-bottom: none;
+			}
+			
+			.post-list a {
+				display: block;
+				text-decoration: none;
+				color: inherit;
+			}
+			
+			.post-list a:hover .post-title {
+				color: var(--color-primary);
+			}
+			
+			.post-title {
+				font-size: 1.25rem;
+				margin: 0 0 0.5rem 0;
+				font-weight: 600;
+				transition: color 0.2s ease;
+			}
+			
+			.post-description {
+				color: var(--color-text-light);
+				margin: 0 0 0.5rem 0;
+				line-height: 1.6;
+			}
+			
+			.post-date {
+				color: var(--color-text-light);
+				font-size: 0.9rem;
+				margin: 0;
+			}
+			
+			.view-all {
+				text-align: center;
+				margin-top: 2rem;
+			}
+			
+			.view-all a {
+				color: var(--color-primary);
+				font-weight: 600;
+			}
+			
+			/* レスポンシブ対応 */
+			@media (max-width: 768px) {
+				main {
+					padding: 1em;
+				}
+				
+				.hero h1 {
+					font-size: 1.75rem;
+				}
+				
+				.hero .tagline {
+					font-size: 1rem;
+				}
+				
+				section h2 {
+					font-size: 1.25rem;
+				}
+			}
+			
+			@media (max-width: 480px) {
+				.hero h1 {
+					font-size: 1.5rem;
+				}
+				
+				.hero .tagline {
+					font-size: 0.95rem;
+				}
+			}
+		</style>
 	</head>
 	<body>
+		{/* ヘッダー（ナビゲーションメニュー）を表示 */}
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			{/* ヒーローセクション */}
+			<section class="hero">
+				<h1>{SITE_TITLE}</h1>
+				<p class="tagline">中小企業の攻めと守りを支える、実践ナレッジ</p>
+				<p class="subtitle">
+					中小企業の社長・経営層向けに、IT・DX（攻め）とセキュリティ（守り）を中心とした<br />
+					今すぐアクションに移せる実践的な情報を発信します。
+				</p>
+			</section>
+
+			{/* このブログについて */}
+			<section>
+				<h2>このブログについて</h2>
+				<p>
+					中小企業の社長・経営層向けに、IT・DX（攻め）とセキュリティ（守り）を中心とした
+					今すぐアクションに移せる実践的な情報を発信します。
+				</p>
+				<ul>
+					<li><strong>中小企業社長目線</strong>：「自分が社長なら欲しい情報」を起点に記事を作成</li>
+					<li><strong>即アクション可能</strong>：読んですぐ実行に移せる具体的なステップを提示</li>
+					<li><strong>攻めと守りの両面</strong>：IT・DX（攻め）とセキュリティ（守り）を統合的にカバー</li>
+				</ul>
+			</section>
+
+			{/* 最新記事 */}
+			{latestPosts.length > 0 && (
+				<section class="latest-posts">
+					<h2>最新記事</h2>
+					<ul class="post-list">
+						{latestPosts.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>
+									<h3 class="post-title">{post.data.title}</h3>
+									{post.data.description && (
+										<p class="post-description">{post.data.description}</p>
+									)}
+									<p class="post-date">
+										{new Date(post.data.pubDate).toLocaleDateString('ja-JP', {
+											year: 'numeric',
+											month: 'long',
+											day: 'numeric',
+										})}
+									</p>
+								</a>
+							</li>
+						))}
+					</ul>
+					<div class="view-all">
+						<a href="/blog/">すべての記事を見る →</a>
+					</div>
+				</section>
+			)}
 		</main>
+		{/* フッター（コピーライト、SNSリンク）を表示 */}
 		<Footer />
 	</body>
 </html>

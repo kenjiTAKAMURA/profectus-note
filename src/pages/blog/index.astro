@@ -1,17 +1,28 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
+// src/pages/blog/index.astro
+// ブログ一覧ページ（ルートパス: /blog）
+// すべてのブログ記事を日付順（新しい順）で一覧表示します
+
+// Astroの組み込み機能をインポート
+import { Image } from 'astro:assets'; // 画像最適化コンポーネント
+import { getCollection } from 'astro:content'; // Content Collectionsから記事を取得
+
+// コンポーネントのインポート
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
+import FormattedDate from '../../components/FormattedDate.astro'; // 日付フォーマット用
 import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_DESCRIPTION, SITE_TITLE, CATEGORIES } from '../../consts';
 
+// ブログ記事を取得して日付順（新しい順）にソート
+// getCollection('blog')でsrc/content/blog/内のすべての記事を取得
+// sort()で公開日（pubDate）の降順にソート
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
 // heroImageが文字列（publicフォルダのパス）か、画像オブジェクトかを判定するヘルパー関数
+// TypeScriptの型ガード関数（型安全性を保証）
 const isStringPath = (img: unknown): img is string => typeof img === 'string';
 ---
 
@@ -21,70 +32,125 @@ const isStringPath = (img: unknown): img is string => typeof img === 'string';
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 2em 1em;
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
+			
+			section h1 {
+				font-size: 2rem;
+				margin-bottom: 2rem;
+			}
+			
+			.post-list {
+				list-style: none;
 				padding: 0;
+				margin: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+			
+			.post-list li {
+				border-bottom: 1px solid var(--color-border);
+				padding: 1.5rem 0;
 			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
+			
+			.post-list li:last-child {
+				border-bottom: none;
 			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
+			
+			.post-list a {
 				display: block;
+				text-decoration: none;
+				color: inherit;
 			}
-			.title {
+			
+			.post-list a:hover .post-title {
+				color: var(--color-primary);
+			}
+			
+			.post-title {
+				font-size: 1.25rem;
+				margin: 0 0 0.5rem 0;
+				color: var(--color-text);
+				font-weight: 600;
+				transition: color 0.2s ease;
+			}
+			
+			.post-description {
+				color: var(--color-text-light);
+				margin: 0 0 0.5rem 0;
+				line-height: 1.6;
+			}
+			
+			.post-meta {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				align-items: center;
+				margin-top: 0.5rem;
+			}
+			
+			.post-date {
+				color: var(--color-text-light);
+				font-size: 0.9rem;
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
 			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
+			
+			.category-badge,
+			.badge-attack,
+			.badge-defense,
+			.badge-both {
+				padding: 0.125rem 0.5rem;
+				border-radius: 0.25rem;
+				font-size: 0.75rem;
+				font-weight: 600;
 			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
+			
+			.category-badge {
+				background-color: var(--color-primary);
+				color: white;
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
+			
+			.badge-attack {
+				background-color: var(--color-attack);
+				color: white;
 			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+			
+			.badge-defense {
+				background-color: var(--color-defense);
+				color: white;
+			}
+			
+			.badge-both {
+				background: linear-gradient(135deg, var(--color-attack) 50%, var(--color-defense) 50%);
+				color: white;
+			}
+			
+			/* レスポンシブ対応 */
+			@media (max-width: 768px) {
+				main {
+					padding: 1em;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				
+				section h1 {
+					font-size: 1.75rem;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
+				
+				.post-title {
+					font-size: 1.125rem;
 				}
-				ul li:first-child .title {
-					font-size: 1.563em;
+			}
+			
+			@media (max-width: 480px) {
+				section h1 {
+					font-size: 1.5rem;
+				}
+				
+				.post-title {
+					font-size: 1rem;
+				}
+				
+				.post-description {
+					font-size: 0.9rem;
 				}
 			}
 		</style>
@@ -93,22 +159,41 @@ const isStringPath = (img: unknown): img is string => typeof img === 'string';
 		<Header />
 		<main>
 			<section>
-				<ul>
+				<h1>Blog</h1>
+				{/* 記事一覧を表示 */}
+				<ul class="post-list">
 					{
+						// 各記事をループして表示
 						posts.map((post) => (
 							<li>
+								{/* 記事へのリンク */}
 								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										isStringPath(post.data.heroImage) ? (
-											<img src={post.data.heroImage} alt="" />
-										) : (
-											<Image width={720} height={360} src={post.data.heroImage} alt="" />
-										)
+									{/* 記事タイトル */}
+									<h2 class="post-title">{post.data.title}</h2>
+									{/* 記事の説明文 */}
+									{post.data.description && (
+										<p class="post-description">{post.data.description}</p>
 									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
+									{/* メタ情報 */}
+									<div class="post-meta">
+										{/* 公開日 */}
+										<p class="post-date">
+											<FormattedDate date={post.data.pubDate} />
+										</p>
+										{/* カテゴリと攻め/守りバッジ */}
+										{CATEGORIES[post.data.category] && (
+											<span class="category-badge">{CATEGORIES[post.data.category].name}</span>
+										)}
+										{post.data.attackOrDefense === 'attack' && (
+											<span class="badge-attack">攻め</span>
+										)}
+										{post.data.attackOrDefense === 'defense' && (
+											<span class="badge-defense">守り</span>
+										)}
+										{post.data.attackOrDefense === 'both' && (
+											<span class="badge-both">攻め・守り</span>
+										)}
+									</div>
 								</a>
 							</li>
 						))

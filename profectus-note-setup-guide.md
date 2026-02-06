@@ -316,10 +316,10 @@ SEO対策やRSS生成に必要なパッケージをインストールします�
 
 ```bash
 # SEO・サイトマップ・RSS用パッケージ
-npm install @astrojs/sitemap @astrojs/rss astro-seo
+npm install @astrojs/sitemap @astrojs/rss
 
-# 画像最適化パッケージ
-npm install @astrojs/image sharp
+# 画像最適化パッケージ（sharpはAstroに含まれている場合があります）
+npm install sharp
 ```
 
 ### 4.4 開発サーバーの起動確認
@@ -350,14 +350,25 @@ cursor .
 ```
 profectus-note/
 ├── public/              # 静的ファイル（画像、favicon等）
+│   ├── assets/         # プレースホルダー画像（デフォルトOGP画像など）
+│   ├── images/         # ブログ記事用の画像（記事ごとの画像）
+│   ├── fonts/          # フォントファイル
 │   └── favicon.svg
 ├── src/
 │   ├── components/      # 再利用可能なコンポーネント
+│   │   ├── BaseHead.astro    # HTMLの<head>セクション（SEO、OGP、構造化データ）
+│   │   ├── Header.astro      # ヘッダーコンポーネント
+│   │   ├── Footer.astro      # フッターコンポーネント
+│   │   ├── FormattedDate.astro  # 日付フォーマット
+│   │   └── HeaderLink.astro     # ナビゲーションリンク
 │   ├── content/         # ブログ記事（Markdown）
-│   │   └── blog/
+│   │   ├── blog/       # ブログ記事ファイル
+│   │   └── config.ts   # 記事のスキーマ定義
 │   ├── layouts/         # ページレイアウト
-│   ├── pages/           # 各ページ
-│   └── styles/          # スタイルシート
+│   │   └── BlogPost.astro    # ブログ記事専用レイアウト
+│   ├── pages/           # 各ページ（ルーティング）
+│   ├── styles/          # スタイルシート
+│   └── consts.ts        # サイト定数（タイトル、URL等）
 ├── astro.config.mjs     # Astroの設定ファイル
 ├── package.json         # プロジェクト情報
 └── tsconfig.json        # TypeScript設定
@@ -569,7 +580,7 @@ import { defineCollection, z } from 'astro:content';
 
 const blog = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     // 基本情報
     title: z.string(),
     description: z.string(),
@@ -583,8 +594,8 @@ const blog = defineCollection({
     // 攻め/守り分類
     attackOrDefense: z.enum(['attack', 'defense', 'both']).default('both'),
     
-    // OGP画像
-    heroImage: z.string().optional(),
+    // OGP画像（文字列パス（publicフォルダ）または画像オブジェクト（src/assets）の両方を受け付ける）
+    heroImage: z.union([z.string(), image()]).optional(),
     ogImage: z.string().optional(),
     
     // 記事タイプ
@@ -608,126 +619,30 @@ export const collections = { blog };
 
 ## 6. Step 4：SEO対策の実装
 
-### 6.1 SEOコンポーネントの作成
+### 6.1 BaseHeadコンポーネントの確認
 
-`src/components/SEO.astro` を作成します：
+`src/components/BaseHead.astro` は既に作成されており、SEO設定、OGPタグ、構造化データ、Google Analytics、Google Fontsがすべて統合されています。
 
-```astro
----
-// src/components/SEO.astro
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
+このコンポーネントは以下の機能を含んでいます：
+- 基本メタタグ（charset, viewport, description, author）
+- OGP（Open Graph Protocol）タグ
+- Twitter Cardタグ
+- 構造化データ（JSON-LD、Schema.org）
+- Google Analytics
+- Google Fonts（Noto Sans JP/Serif JP）
+- RSSフィードリンク
+- ファビコン
 
-interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  article?: boolean;
-  publishedTime?: Date;
-  modifiedTime?: Date;
-  tags?: string[];
-  canonical?: string;
-}
+**プロップス:**
+- `title`: ページタイトル（オプション、デフォルトはSITE_TITLE）
+- `description`: ページの説明（オプション、デフォルトはSITE_DESCRIPTION）
+- `image`: OGP画像（オプション、文字列パスまたは画像オブジェクト）
+- `article`: 記事ページかどうか（オプション）
+- `publishedTime`: 公開日時（記事の場合、オプション）
+- `modifiedTime`: 更新日時（記事の場合、オプション）
+- `tags`: タグ（記事の場合、オプション）
 
-const {
-  title = SITE_TITLE,
-  description = SITE_DESCRIPTION,
-  image = '/og-default.png',
-  article = false,
-  publishedTime,
-  modifiedTime,
-  tags = [],
-  canonical,
-} = Astro.props;
-
-const pageTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
-const canonicalURL = canonical || new URL(Astro.url.pathname, SITE_URL).href;
-const ogImageURL = new URL(image, SITE_URL).href;
----
-
-<!-- 基本メタタグ -->
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content={description} />
-<meta name="author" content={AUTHOR.name} />
-
-<!-- canonical URL -->
-<link rel="canonical" href={canonicalURL} />
-
-<!-- OGP (Open Graph Protocol) -->
-<meta property="og:type" content={article ? 'article' : 'website'} />
-<meta property="og:url" content={canonicalURL} />
-<meta property="og:title" content={pageTitle} />
-<meta property="og:description" content={description} />
-<meta property="og:image" content={ogImageURL} />
-<meta property="og:site_name" content={SITE_TITLE} />
-<meta property="og:locale" content="ja_JP" />
-
-{article && publishedTime && (
-  <meta property="article:published_time" content={publishedTime.toISOString()} />
-)}
-{article && modifiedTime && (
-  <meta property="article:modified_time" content={modifiedTime.toISOString()} />
-)}
-{article && tags.length > 0 && tags.map((tag) => (
-  <meta property="article:tag" content={tag} />
-))}
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content={AUTHOR.twitter} />
-<meta name="twitter:creator" content={AUTHOR.twitter} />
-<meta name="twitter:title" content={pageTitle} />
-<meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImageURL} />
-
-<!-- タイトル -->
-<title>{pageTitle}</title>
-
-<!-- RSS -->
-<link
-  rel="alternate"
-  type="application/rss+xml"
-  title={`${SITE_TITLE} RSS Feed`}
-  href={`${SITE_URL}/rss.xml`}
-/>
-
-<!-- ファビコン -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-<!-- 構造化データ (JSON-LD) -->
-<script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": article ? "BlogPosting" : "WebSite",
-  "name": pageTitle,
-  "description": description,
-  "url": canonicalURL,
-  "image": ogImageURL,
-  ...(article ? {
-    "author": {
-      "@type": "Organization",
-      "name": AUTHOR.name,
-      "url": AUTHOR.url,
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": AUTHOR.name,
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${SITE_URL}/logo.png`,
-      },
-    },
-    "datePublished": publishedTime?.toISOString(),
-    "dateModified": modifiedTime?.toISOString() || publishedTime?.toISOString(),
-  } : {
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": `${SITE_URL}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  }),
-})} />
-```
+ブログ記事レイアウト（`BlogPost.astro`）では、記事のメタデータを自動的に`BaseHead`に渡すようになっています。
 
 ### 6.2 robots.txt の作成
 
@@ -781,7 +696,7 @@ export async function GET(context) {
       pubDate: post.data.pubDate,
       description: post.data.description,
       link: `/blog/${post.slug}/`,
-      categories: [post.data.category, ...post.data.tags],
+      categories: post.data.tags ?? [],
       author: 'プロフェクタスデザイン',
       customData: `<language>ja</language>`,
     })),
@@ -791,73 +706,27 @@ export async function GET(context) {
 }
 ```
 
-### 6.4 レイアウトへのSEOコンポーネント組み込み
+### 6.4 画像フォルダの整理
 
-`src/layouts/BaseLayout.astro` を作成/編集します：
+ブログで使用する画像は以下のように配置します：
 
-```astro
+- **`public/assets/`**: プレースホルダー画像（デフォルトOGP画像など）
+- **`public/images/blog/`**: ブログ記事専用の画像（記事ごとのヒーロー画像など）
+
+記事のfrontmatterでは、以下のように画像パスを指定します：
+
+```yaml
 ---
-// src/layouts/BaseLayout.astro
-import SEO from '../components/SEO.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { GA_TRACKING_ID } from '../consts';
-import '../styles/global.css';
-
-interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  article?: boolean;
-  publishedTime?: Date;
-  modifiedTime?: Date;
-  tags?: string[];
-}
-
-const props = Astro.props;
+heroImage: '/assets/blog-placeholder-1.jpg'  # プレースホルダー画像
+heroImage: '/images/blog/dx-first-step/hero.jpg'  # 記事専用画像
 ---
-
-<!doctype html>
-<html lang="ja">
-  <head>
-    <SEO {...props} />
-    
-    <!-- Google Analytics -->
-    {GA_TRACKING_ID && GA_TRACKING_ID !== 'G-XXXXXXXXXX' && (
-      <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '{GA_TRACKING_ID}');
-        </script>
-      </>
-    )}
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <slot />
-    </main>
-    <Footer />
-  </body>
-</html>
 ```
 
 ### 6.5 OGP画像のデフォルト作成
 
-`public/og-default.png` として、1200×630ピクセルのOGP画像を作成して配置します。
+`public/assets/blog-placeholder-1.jpg` として、1200×630ピクセルのOGP画像を作成して配置します。
 
-> **💡 ヒント**: Canvaなどのツールで作成できます。サイト名「Profectus Note」とタグライン「中小企業の攻めと守りを支える実践ナレッジ」を入れた画像がおすすめです。
+> **💡 ヒント**: Canvaなどのツールで作成できます。サイト名「Profectus Note」とタグライン「中小企業の攻めと守りを支える実践ナレッジ」を入れた画像がおすすめです。この画像は`BaseHead.astro`のデフォルトOGP画像として使用されます。
 
 ---
 
@@ -1389,7 +1258,7 @@ pubDate: 2026-02-03
 category: "dx"
 tags: ["DX", "中小企業", "IT導入"]
 attackOrDefense: "attack"
-heroImage: "/images/blog/dx-first-step.jpg"
+heroImage: "/images/blog/dx-first-step/hero.jpg"
 type: "article"
 actionItems:
   - "社内の紙業務を3つ書き出す"
@@ -1443,7 +1312,8 @@ title: "DX入門: 最初の一歩"
 ![画像](./images/photo.jpg)
 
 # OK: publicフォルダからの絶対パス
-![画像](/images/photo.jpg)
+![画像](/images/blog/article-name/photo.jpg)  # ブログ記事用画像
+![画像](/assets/placeholder.jpg)  # プレースホルダー画像
 ```
 
 ### 15.2 ローカルでの確認方法
@@ -1516,9 +1386,10 @@ npm run preview
 - [ ] Astroプロジェクトを作成した
 - [ ] 必要なパッケージをインストールした
 - [ ] サイト設定（astro.config.mjs）を完了した
-- [ ] SEOコンポーネントを作成した
+- [ ] BaseHeadコンポーネントが正しく動作している（SEO、OGP、構造化データが統合済み）
 - [ ] robots.txtを作成した
 - [ ] RSSフィードを作成した
+- [ ] 画像フォルダ（public/assets/、public/images/blog/）を整理した
 
 ### デプロイ
 - [ ] GitHubリポジトリを作成した

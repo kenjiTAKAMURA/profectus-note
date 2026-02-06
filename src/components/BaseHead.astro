@@ -1,58 +1,177 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
+// src/components/BaseHead.astro
+// HTMLの<head>セクションを生成するコンポーネント
+// SEOメタタグ、OGPタグ、構造化データ、ファビコンなどを設定します
+
+// グローバルCSSをインポート（このコンポーネントを使用するすべてのページに適用される）
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
-import FallbackImage from '../assets/blog-placeholder-1.jpg';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR, GA_TRACKING_ID } from '../consts';
 
+// プロップスの型定義
 interface Props {
-	title: string;
-	description: string;
-	image?: ImageMetadata;
+	title?: string; // ページタイトル（オプション、デフォルトはSITE_TITLE）
+	description?: string; // ページの説明（オプション、デフォルトはSITE_DESCRIPTION）
+	image?: ImageMetadata | string; // OGP画像（オプション、画像オブジェクトまたは文字列パス）
+	article?: boolean; // 記事ページかどうか（オプション）
+	publishedTime?: Date; // 公開日時（記事の場合、オプション）
+	modifiedTime?: Date; // 更新日時（記事の場合、オプション）
+	tags?: string[]; // タグ（記事の場合、オプション）
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// デフォルトのOGP画像パス（public/assets/フォルダから）
+const DEFAULT_OGP_IMAGE = '/assets/blog-placeholder-1.jpg';
 
-const { title, description, image = FallbackImage } = Astro.props;
+// プロップスから値を取得（デフォルト値を設定）
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image = DEFAULT_OGP_IMAGE,
+	article = false,
+	publishedTime,
+	modifiedTime,
+	tags = [],
+} = Astro.props;
+
+// ページタイトルを生成（サイトタイトルと異なる場合は「タイトル | サイトタイトル」形式）
+const pageTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
+
+// canonical URLを生成（重複コンテンツを防ぐため）
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || SITE_URL).href;
+
+// 画像のURLを取得（画像オブジェクトの場合はsrcプロパティ、文字列の場合はそのまま使用）
+const imageUrl = typeof image === 'string' ? image : image.src;
+const ogImageURL = new URL(imageUrl, Astro.site || SITE_URL).href;
 ---
 
-<!-- Global Metadata -->
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" href="/favicon.ico" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+<!-- ============================================
+     Global Metadata（グローバルメタデータ）
+     ============================================ -->
+<meta charset="utf-8" /> {/* 文字エンコーディング */}
+<meta name="viewport" content="width=device-width,initial-scale=1" /> {/* レスポンシブ対応 */}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" /> {/* SVGファビコン */}
+<link rel="icon" href="/favicon.ico" /> {/* フォールバック用のICOファビコン */}
+<link rel="sitemap" href="/sitemap-index.xml" /> {/* サイトマップへのリンク */}
 <link
 	rel="alternate"
 	type="application/rss+xml"
 	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
+	href={new URL('rss.xml', Astro.site || SITE_URL)}
+/> {/* RSSフィードへのリンク */}
+<meta name="generator" content={Astro.generator} /> {/* 使用しているフレームワークを明示 */}
+
+<!-- ============================================
+     Google Fonts
+     ============================================ -->
+{/* フォントの読み込みを最適化（preconnectで接続を事前確立） */}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+{/* Noto Sans JP（ゴシック体）とNoto Serif JP（明朝体）を読み込む */}
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Serif+JP:wght@400;700&display=swap"
+	rel="stylesheet"
 />
-<meta name="generator" content={Astro.generator} />
 
-<!-- Font preloads -->
-<link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
-<link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
-
-<!-- Canonical URL -->
+<!-- ============================================
+     Canonical URL（正規URL）
+     ============================================ -->
+{/* 重複コンテンツを防ぐため、正規URLを指定 */}
 <link rel="canonical" href={canonicalURL} />
 
-<!-- Primary Meta Tags -->
-<title>{title}</title>
-<meta name="title" content={title} />
-<meta name="description" content={description} />
+<!-- ============================================
+     Primary Meta Tags（基本メタタグ）
+     ============================================ -->
+<title>{pageTitle}</title> {/* ページタイトル（ブラウザのタブに表示） */}
+<meta name="title" content={pageTitle} /> {/* タイトルメタタグ */}
+<meta name="description" content={description} /> {/* 説明メタタグ（検索結果に表示） */}
+<meta name="author" content={AUTHOR.name} /> {/* 著者名 */}
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image.src, Astro.url)} />
+<!-- ============================================
+     Open Graph / Facebook（OGPタグ）
+     ============================================ -->
+{/* SNSでシェアされた際の表示を制御 */}
+<meta property="og:type" content={article ? 'article' : 'website'} /> {/* コンテンツタイプ（記事の場合は'article'、それ以外は'website'） */}
+<meta property="og:url" content={canonicalURL} /> {/* ページのURL */}
+<meta property="og:title" content={pageTitle} /> {/* タイトル */}
+<meta property="og:description" content={description} /> {/* 説明 */}
+<meta property="og:image" content={ogImageURL} /> {/* 画像 */}
+<meta property="og:site_name" content={SITE_TITLE} /> {/* サイト名 */}
+<meta property="og:locale" content="ja_JP" /> {/* 日本語サイト */}
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+{/* 記事の場合のみ、公開日時と更新日時を設定 */}
+{article && publishedTime && (
+	<meta property="article:published_time" content={publishedTime.toISOString()} />
+)}
+{article && modifiedTime && (
+	<meta property="article:modified_time" content={modifiedTime.toISOString()} />
+)}
+{/* 記事のタグを設定 */}
+{article && tags.length > 0 && tags.map((tag) => (
+	<meta property="article:tag" content={tag} />
+))}
+
+<!-- ============================================
+     Twitter Card（Twitterカード）
+     ============================================ -->
+{/* Twitterでシェアされた際の表示を制御 */}
+<meta name="twitter:card" content="summary_large_image" /> {/* カードタイプ（大きな画像付き） */}
+<meta name="twitter:site" content={AUTHOR.twitter} /> {/* サイトのTwitterアカウント */}
+<meta name="twitter:creator" content={AUTHOR.twitter} /> {/* 作成者のTwitterアカウント */}
+<meta name="twitter:url" content={canonicalURL} /> {/* ページのURL */}
+<meta name="twitter:title" content={pageTitle} /> {/* タイトル */}
+<meta name="twitter:description" content={description} /> {/* 説明 */}
+<meta name="twitter:image" content={ogImageURL} /> {/* 画像 */}
+
+<!-- ============================================
+     Google Analytics
+     ============================================ -->
+{/* GA_TRACKING_IDが設定されている場合のみスクリプトを読み込む */}
+{GA_TRACKING_ID && GA_TRACKING_ID !== 'G-XXXXXXXXXX' && (
+	<>
+		{/* Google Analyticsのスクリプトを非同期で読み込む */}
+		<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}></script>
+		{/* Google Analyticsの初期化スクリプト */}
+		<script set:html={`
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', '${GA_TRACKING_ID}');
+		`}></script>
+	</>
+)}
+
+<!-- ============================================
+     構造化データ (JSON-LD)
+     ============================================ -->
+{/* Googleなどの検索エンジンが理解しやすい形式でデータを提供 */}
+<script type="application/ld+json" set:html={JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": article ? "BlogPosting" : "WebSite",
+	"name": pageTitle,
+	"description": description,
+	"url": canonicalURL,
+	"image": ogImageURL,
+	...(article ? {
+		"author": {
+			"@type": "Organization",
+			"name": AUTHOR.name,
+			"url": AUTHOR.url,
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": AUTHOR.name,
+			"logo": {
+				"@type": "ImageObject",
+				"url": `${SITE_URL}/logo.png`,
+			},
+		},
+		"datePublished": publishedTime?.toISOString(),
+		"dateModified": modifiedTime?.toISOString() || publishedTime?.toISOString(),
+	} : {
+		"potentialAction": {
+			"@type": "SearchAction",
+			"target": `${SITE_URL}/search?q={search_term_string}`,
+			"query-input": "required name=search_term_string",
+		},
+	}),
+})} />

@@ -1,20 +1,37 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+// src/pages/blog/[...slug].astro
+// 動的ルーティングを使用した個別ブログ記事ページ
+// [...slug]は「任意のパスを受け取る」という意味（例: /blog/first-post/）
+// このファイルがすべてのブログ記事のページを生成します
 
+// Astroの組み込み機能をインポート
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro'; // ブログ記事用レイアウト
+
+// 静的サイト生成（SSG）のためのパス生成関数
+// ビルド時にすべてのブログ記事のパスを生成します
 export async function getStaticPaths() {
+	// すべてのブログ記事を取得
 	const posts = await getCollection('blog');
+	// 各記事に対してパスとプロップスを返す
 	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
+		params: { slug: post.id }, // URLパラメータ（例: { slug: 'first-post' }）
+		props: post, // ページコンポーネントに渡すデータ
 	}));
 }
+
+// プロップスの型定義
 type Props = CollectionEntry<'blog'>;
 
+// 現在の記事データを取得
 const post = Astro.props;
+// MarkdownをHTMLにレンダリング
 const { Content } = await render(post);
 ---
 
+{/* BlogPostレイアウトを使用して記事を表示 */}
+{/* {...post.data}で記事のメタデータ（タイトル、日付など）を渡す */}
 <BlogPost {...post.data}>
+	{/* <Content />でMarkdownから変換されたHTMLを表示 */}
 	<Content />
 </BlogPost>

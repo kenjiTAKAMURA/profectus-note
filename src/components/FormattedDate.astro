@@ -1,17 +1,26 @@
 ---
+// src/components/FormattedDate.astro
+// 日付を整形して表示するコンポーネント
+// セマンティックな<time>タグを使用して日付を表示します
+
+// プロップスの型定義
 interface Props {
-	date: Date;
+	date: Date; // 表示する日付
 }
 
+// プロップスから日付を取得
 const { date } = Astro.props;
 ---
 
+{/* <time>タグでセマンティックにマークアップ */}
 <time datetime={date.toISOString()}>
 	{
+		// 日付をロケールに応じた形式で表示
+		// 'en-us'ロケールで「Jan 1, 2024」形式に整形
 		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
+			year: 'numeric', // 年を4桁で表示（例: 2024）
+			month: 'short', // 月を短縮形で表示（例: Jan）
+			day: 'numeric', // 日を数値で表示（例: 1）
 		})
 	}
 </time>

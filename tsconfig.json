@@ -1,8 +1,11 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  // TypeScriptの設定ファイル
+  // Astroの厳格な型チェック設定を継承します
+  
+  "extends": "astro/tsconfigs/strict", // Astroの厳格な型チェック設定を継承
+  "include": [".astro/types.d.ts", "**/*"], // コンパイル対象に含めるファイル
+  "exclude": ["dist"], // ビルド出力ディレクトリを除外
   "compilerOptions": {
-    "strictNullChecks": true
+    "strictNullChecks": true // null/undefinedの厳密なチェックを有効化
   }
 }

@@ -1,24 +1,38 @@
 ---
+// src/components/HeaderLink.astro
+// ヘッダーのナビゲーションリンクコンポーネント
+// 現在のページに応じてアクティブ状態を表示します
+
 import type { HTMLAttributes } from 'astro/types';
 
+// プロップスの型定義（<a>タグの属性を継承）
 type Props = HTMLAttributes<'a'>;
 
+// プロップスから値を取得
 const { href, class: className, ...props } = Astro.props;
+
+// 現在のパス名を取得（ベースURLを除去）
 const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
+// パス名をスラッシュで分割（例: '/blog/post' → ['blog', 'post']）
 const subpath = pathname.match(/[^\/]+/g);
+// 現在のページかどうかを判定
+// hrefが現在のパス名と一致するか、またはトップレベルのパスと一致する場合にアクティブ
 const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 ---
 
+{/* リンクを表示（アクティブな場合は'active'クラスを追加） */}
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
-	<slot />
+	<slot /> {/* 子要素（リンクテキスト）を表示 */}
 </a>
 <style>
+	/* リンクの基本スタイル */
 	a {
 		display: inline-block;
 		text-decoration: none;
 	}
+	
+	/* アクティブなリンクのスタイル */
 	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
+		font-weight: 600;
 	}
 </style>

@@ -1,80 +1,273 @@
 /* src/styles/global.css */
+/* サイト全体のグローバルスタイルを定義するファイル */
+/* CSS変数を使用して、サイト全体のデザインを一元管理します */
 
+/* ============================================
+   CSS変数（カスタムプロパティ）
+   ============================================ */
 :root {
-  /* Profectus Noteのカラースキーム */
-  --color-primary: #1a365d;      /* ディープブルー - 信頼・専門性 */
-  --color-secondary: #38a169;    /* アクセントグリーン - 成長・進歩 */
-  --color-background: #f7fafc;   /* クリーンホワイト */
-  --color-text: #2d3748;         /* テキスト色 */
-  --color-text-light: #718096;   /* 薄いテキスト色 */
-  --color-border: #e2e8f0;       /* ボーダー色 */
-  --color-attack: #3182ce;       /* 攻め（IT・DX）のアクセント色 */
-  --color-defense: #e53e3e;      /* 守り（セキュリティ）のアクセント色 */
-  
-  /* フォント */
-  --font-heading: 'Noto Sans JP', sans-serif;
-  --font-body: 'Noto Serif JP', serif;
-  
-  /* スペーシング */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 2rem;
-  --spacing-xl: 4rem;
+  /* ============================================
+     Profectus Noteのカラースキーム（ライトモード）
+     ============================================ */
+  --color-primary: #1a365d;      /* ディープブルー - 信頼・専門性を表現 */
+  --color-secondary: #38a169;    /* アクセントグリーン - 成長・進歩を表現 */
+  --color-background: #f7fafc;   /* クリーンホワイト - 背景色 */
+  --color-text: #2d3748;         /* テキスト色 - 読みやすいダークグレー */
+  --color-text-light: #718096;   /* 薄いテキスト色 - 補助的な情報用 */
+  --color-border: #e2e8f0;       /* ボーダー色 - 区切り線などに使用 */
+  --color-attack: #3182ce;       /* 攻め（IT・DX）のアクセント色 - ビジネス成長を表現 */
+  --color-defense: #e53e3e;      /* 守り（セキュリティ）のアクセント色 - リスク対策を表現 */
 }
 
-/* ベーススタイル */
+/* ダークモードのカラースキーム */
+[data-theme="dark"] {
+  --color-primary: #63b3ed;      /* ライトブルー - ダークモード用 */
+  --color-secondary: #68d391;    /* ライトグリーン - ダークモード用 */
+  --color-background: #1a202c;  /* ダークグレー - 背景色 */
+  --color-text: #e2e8f0;         /* ライトグレー - テキスト色 */
+  --color-text-light: #a0aec0;   /* ミディアムグレー - 薄いテキスト色 */
+  --color-border: #2d3748;       /* ダークボーダー色 */
+  --color-attack: #63b3ed;       /* ライトブルー - 攻めのアクセント色 */
+  --color-defense: #fc8181;      /* ライトレッド - 守りのアクセント色 */
+  
+  /* ============================================
+     フォント設定
+     ============================================ */
+  --font-heading: 'Noto Sans JP', sans-serif; /* 見出し用フォント（ゴシック体） */
+  --font-body: 'Noto Serif JP', serif; /* 本文用フォント（明朝体） */
+  
+  /* ============================================
+     スペーシング（間隔）
+     ============================================ */
+  /* 統一された間隔を使用することで、デザインの一貫性を保ちます */
+  --spacing-xs: 0.25rem;  /* 極小の間隔（4px） */
+  --spacing-sm: 0.5rem;   /* 小さい間隔（8px） */
+  --spacing-md: 1rem;     /* 中程度の間隔（16px） */
+  --spacing-lg: 2rem;     /* 大きい間隔（32px） */
+  --spacing-xl: 4rem;     /* 特大の間隔（64px） */
+}
+
+/* ============================================
+   ベーススタイル
+   ============================================ */
+
+/* ボディのスタイル */
 body {
-  font-family: var(--font-body);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  line-height: 1.8;
+  font-family: var(--font-body); /* 本文用フォントを適用 */
+  color: var(--color-text); /* テキスト色を設定 */
+  background-color: var(--color-background); /* 背景色を設定 */
+  line-height: 1.8; /* 行間を広めに設定（読みやすさ向上） */
+  margin: 0;
+  padding: 0;
 }
 
+/* 見出しのスタイル */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  color: var(--color-primary);
+  font-family: var(--font-heading); /* 見出し用フォントを適用 */
+  font-weight: 600; /* やや太字（ミニマルなデザイン） */
+  color: var(--color-text); /* テキスト色を適用 */
+  line-height: 1.3;
 }
 
+/* リンクのスタイル */
 a {
-  color: var(--color-primary);
-  text-decoration: none;
+  color: var(--color-primary); /* リンクの色 */
+  text-decoration: none; /* 下線を削除 */
 }
 
+/* リンクのホバー時のスタイル */
 a:hover {
-  color: var(--color-secondary);
+  color: var(--color-secondary); /* ホバー時にアクセントカラーに変更 */
 }
 
-/* 攻め・守りのバッジ */
+/* ============================================
+   攻め・守りのバッジ
+   ============================================ */
+/* 記事のカテゴリを視覚的に区別するためのバッジ */
+
+/* 攻め（IT・DX）のバッジ */
 .badge-attack {
-  background-color: var(--color-attack);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  background-color: var(--color-attack); /* ブルー背景 */
+  color: white; /* 白文字 */
+  padding: 0.25rem 0.5rem; /* 内側の余白 */
+  border-radius: 0.25rem; /* 角を丸く */
+  font-size: 0.75rem; /* 小さめのフォントサイズ */
+  font-weight: 600; /* やや太字 */
 }
 
+/* 守り（セキュリティ）のバッジ */
 .badge-defense {
-  background-color: var(--color-defense);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  background-color: var(--color-defense); /* レッド背景 */
+  color: white; /* 白文字 */
+  padding: 0.25rem 0.5rem; /* 内側の余白 */
+  border-radius: 0.25rem; /* 角を丸く */
+  font-size: 0.75rem; /* 小さめのフォントサイズ */
+  font-weight: 600; /* やや太字 */
 }
 
-/* 今日からできるアクションボックス */
+/* ============================================
+   今日からできるアクションボックス
+   ============================================ */
+/* 読者が実践できるアクション項目を強調表示するためのボックス */
+
 .action-box {
-  background-color: #ebf8ff;
+  background: linear-gradient(to right, #ebf8ff, #f0fff4); /* 薄いブルーからグリーンへのグラデーション */
+  border-left: 4px solid var(--color-secondary); /* 左側にアクセントカラーのボーダー */
+  padding: var(--spacing-md); /* 内側の余白 */
+  margin: var(--spacing-lg) 0; /* 上下の余白 */
+  border-radius: 0 0.5rem 0.5rem 0; /* 右側の角を丸く */
+}
+
+/* アクションボックス内の見出し */
+.action-box h3 {
+  color: var(--color-secondary); /* アクセントカラー */
+  margin-top: 0; /* 上側の余白を削除 */
+}
+
+/* Markdown内で使用するアクションセクションのスタイル */
+.prose .action-section {
+  background: linear-gradient(to right, #ebf8ff, #f0fff4);
   border-left: 4px solid var(--color-secondary);
-  padding: var(--spacing-md);
-  margin: var(--spacing-lg) 0;
+  padding: 2rem;
+  margin: 3rem 0;
   border-radius: 0 0.5rem 0.5rem 0;
 }
 
-.action-box h3 {
+.prose .action-section h2 {
   color: var(--color-secondary);
   margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.prose .action-section h2::before {
+  content: "★ ";
+}
+
+.prose .action-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.prose .action-section ul li {
+  padding: 0.75rem 0;
+  padding-left: 2rem;
+  position: relative;
+  border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+}
+
+.prose .action-section ul li:last-child {
+  border-bottom: none;
+}
+
+.prose .action-section ul li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-secondary);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* ============================================
+   レスポンシブ対応
+   ============================================ */
+
+/* タブレット対応（768px以下） */
+@media (max-width: 768px) {
+  body {
+    font-size: 0.95rem;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  .action-box {
+    padding: var(--spacing-sm);
+  }
+  
+  .prose .action-section {
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .prose .action-section h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* モバイル対応（480px以下） */
+@media (max-width: 480px) {
+  body {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+  
+  .action-box {
+    padding: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
+  }
+  
+  .prose .action-section {
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+  
+  .prose .action-section h2 {
+    font-size: 1.125rem;
+  }
+  
+  .prose .action-section ul li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================
+   ダークモード対応
+   ============================================ */
+
+/* ダークモード時のアクションセクション */
+[data-theme="dark"] .action-box,
+[data-theme="dark"] .prose .action-section {
+  background: linear-gradient(to right, rgba(49, 130, 206, 0.1), rgba(104, 211, 145, 0.1));
+  border-left-color: var(--color-secondary);
+}
+
+/* ダークモード時のバッジ（色はそのまま、コントラストを確保） */
+[data-theme="dark"] .badge-attack {
+  background-color: var(--color-attack);
+  color: #1a202c;
+}
+
+[data-theme="dark"] .badge-defense {
+  background-color: var(--color-defense);
+  color: #1a202c;
+}
+
+[data-theme="dark"] .category-badge {
+  background-color: var(--color-primary);
+  color: #1a202c;
 }
