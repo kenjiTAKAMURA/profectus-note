@@ -20,15 +20,9 @@ const blog = defineCollection({
     // ============================================
     // カテゴリとタグ
     // ============================================
-    category: z.enum(['dx', 'security', 'it-tools', 'subsidy', 'news', 'case-study']), // カテゴリ（必須、指定された値のみ許可）
+    category: z.enum(['digitalization', 'ai', 'cybersecurity', 'ceo-interview', 'case-study', 'news', 'subsidy', 'tools']), // カテゴリ（必須、指定された値のみ許可）
     tags: z.array(z.string()).default([]), // タグ配列（デフォルトは空配列）
-    
-    // ============================================
-    // 攻め/守り分類
-    // ============================================
-    // 記事が「攻め（ビジネス成長）」「守り（リスク対策）」「両方」のどれかを指定
-    attackOrDefense: z.enum(['attack', 'defense', 'both']).default('both'),
-    
+
     // ============================================
     // 画像設定
     // ============================================

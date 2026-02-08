@@ -106,7 +106,7 @@ TypeScriptのコンパイラ設定です。Astroの厳格な型チェックを�
 - `SITE_URL`: サイトURL
 - `AUTHOR`: 著者情報
 - `SOCIAL_LINKS`: SNSリンク
-- `CATEGORIES`: ブログカテゴリ定義
+- `CATEGORIES`: ブログカテゴリ定義（デジタル化、AI、サイバーセキュリティ等）
 - `GA_TRACKING_ID`: Google Analytics ID
 
 #### `src/content/config.ts`
@@ -117,7 +117,7 @@ Content Collectionsのスキーマ定義です。ブログ記事のfrontmatter�
 - `description`: 記事の説明
 - `pubDate`: 公開日
 - `updatedDate`: 更新日（オプション）
-- `category`: カテゴリ（dx, security, it-tools等）
+- `category`: カテゴリ（digitalization, ai, cybersecurity, ceo-interview, case-study, news, subsidy, tools）
 - `tags`: タグ配列
 - `heroImage`: ヒーロー画像（OGP画像）
 - `draft`: 下書きフラグ
@@ -143,13 +143,11 @@ Astroでは、`src/pages/`ディレクトリ内のファイルが自動的にル
 **処理の流れ:**
 1. `getCollection('blog')`でブログ記事を取得
 2. 日付順にソート
-3. 各記事のタイトル、カテゴリバッジ、攻め/守りバッジ、日付、ヒーロー画像を表示
+3. 各記事のタイトル、カテゴリバッジ、日付を表示
 
 **表示される情報:**
-- ヒーロー画像
 - 記事タイトル
-- カテゴリバッジ（例: DX戦略、セキュリティ）
-- 攻め/守りバッジ（attack, defense, both）
+- カテゴリバッジ（例: デジタル化、AI、サイバーセキュリティ）
 - 公開日
 
 #### `blog/[...slug].astro`
@@ -267,8 +265,7 @@ HTMLの`<head>`セクションを生成するコンポーネントです。SEO�
 - 今日からできるアクションセクション（actionItemsがある場合）
 
 **表示されるバッジ:**
-- カテゴリバッジ（例: DX戦略、セキュリティ）
-- 攻め/守りバッジ（attack, defense, both）
+- カテゴリバッジ（例: デジタル化、AI、サイバーセキュリティ）
 
 ---
 
@@ -298,7 +295,7 @@ HTMLの`<head>`セクションを生成するコンポーネントです。SEO�
 title: 記事タイトル
 description: 記事の説明
 pubDate: 2024-01-01
-category: dx
+category: digitalization
 tags: ['tag1', 'tag2']
 heroImage: '/assets/image.jpg'
 draft: false

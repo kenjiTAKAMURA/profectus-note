@@ -14,16 +14,15 @@ import Header from '../components/Header.astro'; // ヘッダーコンポーネ�
 type Props = CollectionEntry<'blog'>['data'];
 
 // プロップスから値を取得
-const { title, description, pubDate, updatedDate, heroImage, tags, category, attackOrDefense, actionItems } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, category, actionItems } = Astro.props;
 
 // heroImageが文字列（publicフォルダのパス）か、画像オブジェクトかを判定
 // TypeScriptの型ガード（型安全性を保証）
 const isStringPath = typeof heroImage === 'string';
 
-// カテゴリ名と攻め/守りのバッジ表示用
+// カテゴリ名の表示用
 import { CATEGORIES } from '../consts';
 const categoryInfo = CATEGORIES[category];
-const badgeType = attackOrDefense || categoryInfo?.type || 'both';
 ---
 
 <!doctype html>
@@ -217,19 +216,10 @@ const badgeType = attackOrDefense || categoryInfo?.type || 'both';
 					{/* タイトルと日付セクション */}
 					<div class="title">
 						<div class="meta-info">
-							{/* カテゴリと攻め/守りバッジ */}
+							{/* カテゴリバッジ */}
 							<div class="badges">
 								{categoryInfo && (
 									<span class="category-badge">{categoryInfo.name}</span>
-								)}
-								{badgeType === 'attack' && (
-									<span class="badge-attack">攻め</span>
-								)}
-								{badgeType === 'defense' && (
-									<span class="badge-defense">守り</span>
-								)}
-								{badgeType === 'both' && (
-									<span class="badge-both">攻め・守り</span>
 								)}
 							</div>
 							<div class="date">

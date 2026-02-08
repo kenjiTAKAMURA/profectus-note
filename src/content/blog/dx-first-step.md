@@ -3,7 +3,7 @@ title: "中小企業がDXを始める最初の一歩：何から手をつける�
 description: "DXに取り組みたいけど何から始めればいいかわからない...そんな中小企業の社長向けに、今日からできる具体的なステップを解説します。"
 pubDate: 2026-02-05
 updatedDate: 2026-02-05
-category: "dx"
+category: "digitalization"
 tags: ["DX", "中小企業", "IT導入"]
 heroImage: "/images/blog/dx-first-step/hero.jpg"
 draft: false
